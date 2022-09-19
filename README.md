@@ -10,6 +10,18 @@ To check where it was installed in your computer:
 
     navi info cheats-path
 
+# Using navi
+
+You have to query navi sheets using the following queries:
+
+    navi -q bioinfo 
+    navi -q blast 
+    navi -q fasta 
+    navi -q gff 
+
+
+
+
 
 ## What are the commands available?
 
