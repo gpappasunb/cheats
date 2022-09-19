@@ -12,12 +12,13 @@ To check where it was installed in your computer:
 
 # Using navi
 
-You have to query navi sheets using the following queries:
+You have to search navi sheets using the following queries:
 
     navi -q bioinfo 
+    navi --query bioinfo
     navi -q blast 
     navi -q fasta 
-    navi -q gff 
+    navi --query gff 
 
 
 
