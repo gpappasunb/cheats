@@ -1,0 +1,87 @@
+% bioinfo
+
+$ num_threads: seq 1 $(grep -c processor /proc/cpuinfo)
+$ num_range: echo ' 1 5 10 15' | tr ' ' '\n'
+
+; $ fasta_file: fd '.*fa[a|n|s|sta]?(.gz)?$' 
+; $ gff_file: fd -e gff -e gff3 <dir>
+; $ fasta_file: find  -regex '.*\.\(fa[a|n|s|sta]\)\(.gz\)\?' ; echo "./"  | tr ' ' '\n'
+; $ gff_file: find  -regex '.*\.\(gff[3]\?\)' ; echo " "  | tr ' ' '\n'
+
+% bioinfo, blast 
+
+@bioinfo
+
+$ blast_program: echo 'blastp blastx blastn tblastn tblastx' | tr ' ' '\n'
+$ db_path: echo "/home/gpappas/WORK/BNUT/Assembly $BLASTDB/" | tr ' ' '\n'
+$ db_name: find  <db_path> -regex '.*\.\([pn]in\)' -exec basename {} \; |  sed 's/\(.*\)\..*/\1/' ; echo "./"  | tr ' ' '\n'
+$ evalue: echo "1e-15 1e-30" | tr ' ' '\n'
+
+# Execute blast against a database of choice
+BLASTDB=<db_path> <blast_program> -db <db_name> -query <query_file> -out <output_file> -num_alignments <num_range> -num_descriptions <num_range> -num_threads <num_threads> -evalue <evalue>
+
+
+% bioinfo, fasta 
+
+@bioinfo
+
+; $ fa_file: find <dir> -regex '.*\.fa[a|n|s|sta]?\(.gz\)?' -print  | tr ' ' '\n'
+$ fasta_file: fd '.*fa[a|n|s|sta]?(.gz)?$' <dir>
+$ gff_file: fd -e gff -e gff3 <dir>
+
+# Fasta from a subset of ids
+seqkit faidx <fasta_file> <id_list> -o <output_file> 
+
+# Subset a fasta by IDs in a file
+seqkit grep -f <ids_file> <fasta_file> -o <output_file>
+
+# Fasta subsequence from range
+seqkit faidx <fasta_file> <chromosome>:<start>-<end> -o <output_file> 
+
+# Subset a fasta by IDs using a regex 
+seqkit grep <fasta_file> -r -p <regex> -o <output_file>
+
+# Subset a fasta by a GFF file
+seqkit subseq --gtf <gff_file> <fasta_file> 
+
+# Get the sequence ids
+seqkit seq -i <fasta_file> > <output_file>
+
+# Get the sequence full titles
+seqkit seq -n <fasta_file> > <output_file>
+
+# Count the number of sequences
+grep -c '>' <fasta_file> 
+
+# Index a fasta file
+seqkit faidx <fasta_file> 
+
+# Full path of fasta file
+realpath <fasta_file>
+
+
+% bioinfo, gff 
+
+@bioinfo
+
+
+$ gff_file: fd 'gff[3]?$' <dir>
+$ feature_name: echo gene mRNA CDS | tr ' ' '\n'
+$ gff_features: <<gff_file> sed -E '/^#/d' | cut -f 3 | sort -u
+$ attribute_key: echo Name ID Parent | tr ' ' '\n'
+
+# filter GFF by gene feature type 
+awk '{ if($3 == "gene"){print} }  <gff_file>
+
+# filter GFF by selected feature types
+<<gff_file> awk '{ if($3 == "<gff_features>"){print}' }  
+
+# filter GFF by selected feature types
+awk '{ if($3 == "<feature_name>"){print} }'  <gff_file>
+
+# Get the list of a specific attribute in GFF (9th column)
+<<gff_file> cut -f 9 | perl -lanE '/(?<=<attribute_key>)=(.*?)(?=[;\n])/; print "$1"' | uniq
+
+# GFF to BED
+<<gff_file> awk 'BEGIN{IFS="\t"; OFS="\t";} {print $1, $4, $5, $9, $6}' 
+
