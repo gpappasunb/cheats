@@ -6,6 +6,10 @@ To [import](https://github.com/denisidoro/navi#cheatsheet-repositories) these in
 
     navi repo add https://github.com/gpappasunb/cheats 
 
+To check where it was installed in your computer:
+
+    navi info cheats-path
+
 
 ## What are the commands available?
 
