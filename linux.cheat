@@ -1,0 +1,24 @@
+% linux
+
+$ num_threads: seq 1 $(grep -c processor /proc/cpuinfo)
+$ num_range: echo ' 1 5 10 15' | tr ' ' '\n'
+
+; $ fasta_file: fd '.*fa[a|n|s|sta]?(.gz)?$' 
+; $ gff_file: fd -e gff -e gff3 <dir>
+; $ fasta_file: find  -regex '.*\.\(fa[a|n|s|sta]\)\(.gz\)\?' ; echo "./"  | tr ' ' '\n'
+; $ gff_file: find  -regex '.*\.\(gff[3]\?\)' ; echo " "  | tr ' ' '\n'
+
+% linux, sed
+
+@linux
+
+$ file: fd .
+
+# sed filter lines between string patterns
+sed -n '/<pattern>/, /<pattern_end>/ p' <file>
+
+# sed from pattern to a line number
+sed -n '/Alchemist/, 5 p' books.txt
+
+# sed from pattern to the end of file
+sed -n '/Alchemist/, $ p' books.txt
